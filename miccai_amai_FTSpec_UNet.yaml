@@ -1,0 +1,46 @@
+training:
+  log_distcribtion: "ID: MICCAI AMAI"
+  epochs: 20
+  batch_size: 4
+  learning_rate: 0.0001
+  weight_decay: 0.0001
+  min_lr: 0.0000001
+  warmup_learning_epochs: 30
+  use_plateau_schedular: True
+  lr_patience: 3 
+  eval_interval: 5
+  loss_functions: # BCEWithLogitsLoss, DICE, DICEFLIP, OF_Loss
+    - name: balance_dice
+      weight: 0.5
+      empty_weight: 0.5
+      class_weight: [1,1,1,1,1,1,1,1] 
+    - name: balance_bce
+      weight: 0.5
+      present_weight: 1.0
+      absent_weight: 0.5
+      class_weight: [1,1,1,1,1,1,1,1] 
+  amp: True
+  gradient_clipping: 1.0
+  dataloader_worker: 12
+  dataloader_prefatch: 4
+  supervision_weight: [0.65,0.15,0.15,0.05]
+  
+model:
+  name: FCT_ResNet
+  attentions_heads: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+  filters: [3, 32, 64, 128, 512, 1024, 512, 128, 64, 32, 8]
+  dilation_rates: [2,4,8,16]
+  stride_q: [1,1,1,1,1,1,1,1,1]
+  stride_kv:  [2,2,2,2,2,2,2,2,2]
+  fuse_mode_encoders: 'cat'
+
+data:
+  input_width: 192
+  input_height: 192
+
+testing:
+  threshold: 0.5 
+  
+general:
+  seed: 100 # each GPU will get it's own Seed + Rank
+  
